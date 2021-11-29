@@ -1,13 +1,13 @@
 # app.py
 from flask import Flask, json, request, jsonify
 import pyodbc
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+# from sqlalchemy import create_engine
+# from sqlalchemy.orm import sessionmaker
 from Database import DBInfo
 
 app = Flask(__name__)
 
-cnxn = pyodbc.connect('DRIVER={MySql};SERVER='+DBInfo.server+';DATABASE='+DBInfo.database+';UID='+DBInfo.username+';PWD='+ DBInfo.password)
+cnxn = pyodbc.connect('DRIVER={mysql};SERVER='+DBInfo.server+';DATABASE='+DBInfo.database+';UID='+DBInfo.username+';PWD='+ DBInfo.password)
 print(cnxn.getinfo(pyodbc.SQL_MAX_CONCURRENT_ACTIVITIES))
 # cursor = cnxn.cursor()
 # DBURL = f'mysql://{DBInfo.username}:{DBInfo.password}@{DBInfo.server}/{DBInfo.database}'
@@ -56,8 +56,6 @@ def loginUser(username):
     if len(row) > 0:
         jsonMsg = jsonify({'success':True,'msg':'Username and Password are in the database'})
     return jsonMsg
-
-
 
 # A welcome message to test our server
 @app.route('/')
