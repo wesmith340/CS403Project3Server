@@ -3,7 +3,7 @@ from typing import Text
 from flask import Flask, json, request, jsonify
 from sqlalchemy import create_engine
 import pandas as pd
-from base64 import b64encode
+from pybase64 import b64encode
 
 from Database import DBInfo
 
