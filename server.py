@@ -27,7 +27,7 @@ def notAttending(userTUID, meetingTUID):
         return True
     else:
         return False
-        
+
 def rowsToDict(rows):
     for r in rows:
         newR = {}
@@ -128,6 +128,11 @@ def loginUser(username):
 @app.route('/getallusers', methods=['GET'])
 def getallusers():
     data = pd.read_sql(sql=DBInfo.SELECT_USER, con=engine)
+    return jsonify(data.to_dict('records'))
+
+@app.route('/getallmeetings', methods=['GET'])
+def getallmeetings():
+    data = pd.read_sql(sql=DBInfo.SELECT_MEETING, con=engine)
     return jsonify(data.to_dict('records'))
 
 # A welcome message to test our server

@@ -10,6 +10,11 @@ SELECT_USER = """
         LastName
     FROM User 
 """
+SELECT_MEETING = """
+    SELECT 
+        *
+    FROM TableTopGame 
+"""
 INSERT_USER = """
     INSERT INTO User (Username, FirstName, LastName, Password) 
 """
