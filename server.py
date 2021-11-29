@@ -3,6 +3,7 @@ from typing import Text
 from flask import Flask, json, request, jsonify
 from sqlalchemy import create_engine
 import pandas as pd
+from base64 import b64encode
 
 from Database import DBInfo
 
@@ -37,10 +38,10 @@ def rowsToDict(rows):
 def addUser():
     print(request.json)
     info = request.json
-    username = info['username']
-    fname = info['fname']
-    lname = info['lname']
-    hashPassword = info['password']
+    username = info['Username'].lower()
+    fname = info['FirstName']
+    lname = info['LastName']
+    hashPassword = b64encode(info['Password'])
     row = None
     jsonMsg = jsonify({'success':False,'errorMsg':'Unknown error'})
     with engine.begin() as con:
@@ -62,13 +63,13 @@ def deleteUser():
     print(request.json)
     info = request.json
     username = info['username']
-    password = info['password']
+    hashPassword = info['password']
     jsonMsg = jsonify({'success':False, 'msg':f'Unable to delete {username}'})
 
 
-    if (verifyUser(username, password)):
+    if (verifyUser(username, hashPassword)):
         with engine.begin() as con:
-            con.execute(DBInfo.DELETE_USER+f"WHERE Username='{username}' AND Password='{password}'")
+            con.execute(DBInfo.DELETE_USER+f"WHERE Username='{username}' AND Password='{hashPassword}'")
             jsonMsg = jsonify({'success':True, 'msg':f'{username} was successfully deleted'})
 
     return jsonMsg
@@ -77,7 +78,7 @@ def deleteUser():
 def createMeeting(username):
     print(request.json)
     info = request.json
-    password = info['password']
+    hashPassword = b64encode(info['Password'])
     gameName = info['gamename']
     meetingDateTime = info['datetime']
     totalOpenSlots = info['openslots']
@@ -86,7 +87,7 @@ def createMeeting(username):
 
     jsonMsg = jsonify({'success':False, 'msg':f'Unable to create meeting'})
 
-    user = verifyUser(username, password)
+    user = verifyUser(username, hashPassword)
     
     if user != False:
         with engine.begin() as con:
@@ -116,11 +117,12 @@ def joinMeeting(username, meetingID):
 
 @app.route('/loginuser/<username>', methods=['POST'])
 def loginUser(username):
-    password = request.form.get('password')
+    info = request.json
+    hashPassword = b64encode(info['Password'])
     row = None
     jsonMsg = jsonify({'success':False, 'errorMsg':'Username and Password do not match'})
     with engine.begin() as con:
-        row = con.execute(Text(DBInfo.VERIFY_USER+f" WHERE Username = '{username}' AND Password = '{password}'")).fetchall()
+        row = con.execute(Text(DBInfo.VERIFY_USER+f" WHERE Username = '{username}' AND Password = '{hashPassword}'")).fetchall()
     if len(row) > 0:
         jsonMsg = jsonify({'success':True,'msg':'Username and Password are in the database'})
     return jsonMsg
@@ -138,7 +140,7 @@ def getallmeetings():
 # A welcome message to test our server
 @app.route('/')
 def index():
-    return "<h1>Server version 1.3</h1>"
+    return "Documentation at "
 
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
