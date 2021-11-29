@@ -1,50 +1,68 @@
 # app.py
-from flask import Flask, request, jsonify
+from flask import Flask, json, request, jsonify
+import pyodbc
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from Database import DBInfo
+
 app = Flask(__name__)
 
-@app.route('/getmsg/', methods=['GET'])
-def respond():
-    # Retrieve the name from url parameter
-    name = request.args.get("name", None)
+cnxn = pyodbc.connect('DRIVER={MySql};SERVER='+DBInfo.server+';DATABASE='+DBInfo.database+';UID='+DBInfo.username+';PWD='+ DBInfo.password)
+print(cnxn.getinfo(pyodbc.SQL_MAX_CONCURRENT_ACTIVITIES))
+# cursor = cnxn.cursor()
+# DBURL = f'mysql://{DBInfo.username}:{DBInfo.password}@{DBInfo.server}/{DBInfo.database}'
+# engine = create_engine(DBURL)
+# Session = sessionmaker(engine)
 
-    # For debugging
-    print(f"got name {name}")
+@app.route('/newuser', methods=['POST'])
+def addUser():
+    username = request.form.get('username')
+    fname = request.form.get('fname')
+    lname = request.form.get('lname')
+    hashPassword = request.form.get('hashPassword')
+    row = None
+    success = False
+    jsonMsg = jsonify({'success':success,'errorMsg':'Unknown error'})
+    with cnxn:
+        cursor = cnxn.cursor()
 
-    response = {}
+        cursor.execute(DBInfo.SELECT_USER, username)
+        row = cursor.fetchall()
+        cursor.close()
+        
+    if (row == None or len(row) == 0):
+        with cnxn:
+            cursor = cnxn.cursor()
+            cursor.execute(DBInfo.INSERT_USER, username, fname, lname, hashPassword)
+            success = True
+            jsonMsg = jsonify({'success':success})
+    else :
+        error = 'Username already exists'
+        jsonMsg = jsonify({
+            'success':success,
+            'errorMsg':error
+            })
+    return jsonMsg
 
-    # Check if user sent a name at all
-    if not name:
-        response["ERROR"] = "no name found, please send a name."
-    # Check if the user entered a number not a name
-    elif str(name).isdigit():
-        response["ERROR"] = "name can't be numeric."
-    # Now the user entered a valid name
-    else:
-        response["MESSAGE"] = f"Welcome {name} to our awesome platform!!"
+@app.route('/loginuser/<username>', methods=['POST'])
+def loginUser(username):
+    hashPassword = request.form.get('hashPassword')
+    row = None
+    jsonMsg = jsonify({'success':False, 'errorMsg':'Username and Password do not match'})
+    with cnxn:
+        cursor = cnxn.cursor()
+        cursor.execute(DBInfo.VERIFY_USER, username, hashPassword)
+        row = cursor.fetchall()
+    if len(row) > 0:
+        jsonMsg = jsonify({'success':True,'msg':'Username and Password are in the database'})
+    return jsonMsg
 
-    # Return the response in json format
-    return jsonify(response)
 
-@app.route('/post/', methods=['POST'])
-def post_something():
-    param = request.form.get('name')
-    print(param)
-    # You can add the test cases you made in the previous function, but in our case here you are just testing the POST functionality
-    if param:
-        return jsonify({
-            "Message": f"Welcome {param} to our awesome platform!!",
-            # Add this option to distinct the POST request
-            "METHOD" : "POST"
-        })
-    else:
-        return jsonify({
-            "ERROR": "no name found, please send a name."
-        })
 
 # A welcome message to test our server
 @app.route('/')
 def index():
-    return "<h1>Welcome to our server !!</h1>"
+    return "<h1>Server version 1.2</h1>"
 
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
