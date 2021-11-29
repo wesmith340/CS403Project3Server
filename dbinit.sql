@@ -14,6 +14,8 @@ CREATE TABLE TableTopGame (
 	Organizer INT NOT NULL,
 	MeetingDateTime DateTime,
 	TotalOpenSlots INT,
+	Latitude Double,
+	Longitude Double,
 	PRIMARY KEY(TableTopGame_TUID)
 );
 
