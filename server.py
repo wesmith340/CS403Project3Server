@@ -3,7 +3,7 @@ from typing import Text
 from flask import Flask, json, request, jsonify
 from sqlalchemy import create_engine, text
 import pandas as pd
-from sqlalchemy.sql.expression import bindparam
+from sqlalchemy.sql.expression import bindparam, true
 from pybase64 import b64encode
 
 from Database import DBInfo
@@ -13,6 +13,7 @@ app = Flask(__name__)
 DBURL = f'mysql://{DBInfo.username}:{DBInfo.password}@{DBInfo.server}/{DBInfo.database}'
 engine = create_engine(DBURL)
 
+# Function for checking if a username and password match in the database
 def verifyUser(username, password):
     user = pd.read_sql(text(DBInfo.VERIFY_USER).bindparams(username=username,password=password), engine)
     if len(user) > 0:
@@ -20,6 +21,7 @@ def verifyUser(username, password):
     else:
         return False
 
+# Function returns true if user is not attending meeting
 def notAttending(userTUID, meetingTUID):
     attendee = pd.read_sql(text(DBInfo.CHECK_ATTENDEE).bindparams(user=userTUID, meeting=meetingTUID), engine)
     if len(attendee) == 0:
@@ -27,11 +29,7 @@ def notAttending(userTUID, meetingTUID):
     else:
         return False
 
-def rowsToDict(rows):
-    for r in rows:
-        newR = {}
-
-
+# Route for creating a new user
 @app.route('/newuser', methods=['POST'])
 def addUser():
     print(request.json)
@@ -41,34 +39,32 @@ def addUser():
     lname = info['LastName']
     hashPassword = b64encode(str.encode(info['Password']))
     row = None
-    jsonMsg = jsonify({'success':False,'errorMsg':'Unknown error'})
+    jsonMsg = jsonify({'Success':False,'Msg':'Unknown error'})
     with engine.begin() as con:
         row = con.execute(text(DBInfo.CHECK_USER).bindparams(username=username)).fetchall()
         
     if (row == None or len(row) == 0):
         with engine.begin() as con:
             con.execute(text(DBInfo.INSERT_USER).bindparams(username=username,firstName=fname,lastName=lname,password=hashPassword))
-            jsonMsg = jsonify({'success':True, 'msg':f'{username} has been added to the database'})
+            jsonMsg = jsonify({'Success':True, 'Msg':f'{username} has been added to the database'})
     else : 
         jsonMsg = jsonify({
-            'success':False,
-            'errorMsg':'Username already exists'
+            'Success':False,
+            'Msg':'Username already exists'
             })
     return jsonMsg
 
-@app.route('/deleteuser', methods=['DELETE'])
-def deleteUser():
+@app.route('/deleteuser/<username>', methods=['DELETE'])
+def deleteUser(username):
     print(request.json)
     info = request.json
-    username = info['username']
-    hashPassword = info['password']
-    jsonMsg = jsonify({'success':False, 'msg':f'Unable to delete {username}'})
-
+    hashPassword = info['Password']
+    jsonMsg = jsonify({'Success':False, 'Msg':f'Unable to delete {username}'})
 
     if (verifyUser(username, hashPassword)):
         with engine.begin() as con:
             con.execute(text(DBInfo.DELETE_USER).bindparams(username=username, password=hashPassword))
-            jsonMsg = jsonify({'success':True, 'msg':f'{username} was successfully deleted'})
+            jsonMsg = jsonify({'Success':True, 'Msg':f'{username} was successfully deleted'})
 
     return jsonMsg
 
@@ -77,13 +73,13 @@ def createMeeting(username):
     print(request.json)
     info = request.json
     hashPassword = b64encode(str.encode(info['Password']))
-    gameName = info['gamename']
-    meetingDateTime = info['datetime']
-    totalOpenSlots = info['openslots']
-    latitude = info['latitude']
-    longitude = info['longitude']
+    gameName = info['GameName']
+    meetingDateTime = info['DateTime']
+    totalOpenSlots = info['OpenSlots']
+    latitude = info['Latitude']
+    longitude = info['Longitude']
 
-    jsonMsg = jsonify({'success':False, 'msg':f'Unable to create meeting'})
+    jsonMsg = jsonify({'Success':False, 'Msg':f'Unable to create meeting'})
 
     user = verifyUser(username, hashPassword)
     
@@ -93,21 +89,21 @@ def createMeeting(username):
                 organizer=user['User_TUID'],gameName=gameName,meetingDateTime=meetingDateTime,
                 totalOpenSlots=totalOpenSlots,latitude=latitude,longitude=longitude, user=user['User_TUID']
                 ))
-            jsonMsg = jsonify({'success':True, 'msg':f'Successfully added meeting'})
+            jsonMsg = jsonify({'Success':True, 'Msg':f'Successfully added meeting'})
 
     return jsonMsg
 
 @app.route('/joinmeeting/<username>/<meetingID>', methods=['POST'])
 def joinMeeting(username, meetingID):
     password = request.json['password']
-    jsonMsg = jsonify({'success':False, 'msg':f'Unable to join meeting'})
+    jsonMsg = jsonify({'Success':False, 'Msg':f'Unable to join meeting'})
 
     user = verifyUser(username, password)
 
     if user != False and notAttending(user['User_TUID'], meetingID):
         with engine.begin() as con:
             con.execute(text(DBInfo.ATTEND_MEETING).bindparams(user=user['User_TUID'],meeting=meetingID))
-            jsonMsg = jsonify({'success':True, 'msg':f'Successfully joined meeting'})
+            jsonMsg = jsonify({'Success':True, 'Msg':f'Successfully joined meeting'})
 
     return jsonMsg
 
@@ -118,11 +114,11 @@ def loginUser(username):
     info = request.json
     hashPassword = b64encode(str.encode(info['Password']))
     row = None
-    jsonMsg = jsonify({'success':False, 'errorMsg':'Username and Password do not match'})
+    jsonMsg = jsonify({'Success':False, 'Msg':'Username and Password do not match'})
     with engine.begin() as con:
         row = con.execute(text(DBInfo.VERIFY_USER).bindparams(username=username,password=hashPassword)).fetchall()
     if len(row) > 0:
-        jsonMsg = jsonify({'success':True,'msg':'Username and Password are in the database'})
+        jsonMsg = jsonify({'Success':True,'Msg':'Username and Password are in the database'})
     return jsonMsg
 
 @app.route('/getallusers', methods=['GET'])
@@ -143,3 +139,4 @@ def index():
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
     app.run(threaded=True, port=5000)
+    app.debug(True)

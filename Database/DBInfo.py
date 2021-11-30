@@ -3,7 +3,7 @@ password = 'fw9gwxxzkmofzfsa'
 server = 'dcrhg4kh56j13bnu.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306'
 database = 'mfvexsc1zrm922nb'
 SELECT_ALL_USERS = """
-    SELECT 
+    SELECT 0
         User_TUID,
         Username,
         FirstName,

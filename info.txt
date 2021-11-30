@@ -1,0 +1,100 @@
+baseurl/newuser
+Method: POST
+Body:
+{
+    "Username":"",
+    "FirstName":"",
+    "LastName":"",
+    "Password":""
+}
+Returns:
+{
+    "Success":true,
+    "Msg":" has been added to the database"
+}
+
+baseurl/deleteuser/<username>
+Method: DELETE
+Body:
+{
+    "Password":""
+}
+Returns: 
+{
+    "Success":true, 
+    "Msg":" was successfully deleted"
+}
+
+/createmeeting/<username>
+Method: POST
+Body:
+{
+    "Password":"",
+    "GameName":"",
+    "DateTime":"",
+    "OpenSlots": 0,
+    "Latitude": 0,
+    Longitude": 0
+}
+Returns:
+{
+    "Success":true, 
+    "Msg":" Successfully added meeting"
+}
+
+/joinmeeting/<username>/<meetingID>
+Method: POST
+Body:
+{
+    "Password":""
+}
+Returns:
+{
+    "Success":true, 
+    "Msg":" Successfully joined meeting"
+}
+
+/loginuser/<username>
+Method: POST
+Body:
+{
+    "Password":""
+}
+Returns:
+{
+    "Success":true, 
+    "Msg":"Username and Password are in the database"
+}
+
+/getallusers
+Method: GET
+Returns:
+[
+    {
+        "FirstName": "",
+        "LastName": "",
+        "User_TUID": 0,
+        "Username": ""
+    },
+    {
+        "FirstName": "",
+        "LastName": "",
+        "User_TUID": 0,
+        "Username": ""
+    }
+]
+
+/getallmeetings
+Method: GET
+Returns:
+[
+    {
+        "GameName": "",
+        "Latitude": 0,
+        "Longitude": 0,
+        "MeetingDateTime": "",
+        "Organizer": 0,
+        "TableTopGame_TUID": 0,
+        "TotalOpenSlots": 0
+    }
+]
