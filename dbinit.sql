@@ -12,6 +12,7 @@ DROP TABLE if EXISTS TableTopGame;
 CREATE TABLE TableTopGame (
 	TableTopGame_TUID INT NOT NULL AUTO_INCREMENT,
 	Organizer INT NOT NULL,
+	GameName VARCHAR(64),
 	MeetingDateTime DateTime,
 	TotalOpenSlots INT,
 	Latitude Double,
