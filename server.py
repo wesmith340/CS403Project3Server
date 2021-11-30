@@ -122,6 +122,7 @@ def loginUser(username):
 @app.route('/getallusers', methods=['GET'])
 def getallusers():
     data = pd.read_sql(sql=DBInfo.SELECT_ALL_USERS, con=engine)
+    print(data.to_dict('records'))
     return jsonify(data.to_dict('records'))
 
 @app.route('/getallmeetings', methods=['GET'])
