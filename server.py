@@ -1,9 +1,7 @@
 # app.py
-from typing import Text
 from flask import Flask, json, request, jsonify
 from sqlalchemy import create_engine, text
 import pandas as pd
-from sqlalchemy.sql.expression import bindparam, true
 from pybase64 import b64encode
 
 from Database import DBInfo
@@ -123,7 +121,7 @@ def loginUser(username):
 
 @app.route('/getallusers', methods=['GET'])
 def getallusers():
-    data = pd.read_sql(sql=DBInfo.SELECT_USER, con=engine)
+    data = pd.read_sql(sql=DBInfo.SELECT_ALL_USERS, con=engine)
     return jsonify(data.to_dict('records'))
 
 @app.route('/getallmeetings', methods=['GET'])
