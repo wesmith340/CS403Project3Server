@@ -1,3 +1,5 @@
+baseurl = https://cs403project3server.herokuapp.com
+
 baseurl/newuser
 Method: POST
 Body:
