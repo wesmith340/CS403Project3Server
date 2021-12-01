@@ -142,7 +142,7 @@ def getallcategories():
 # A welcome message to test our server
 @app.route('/')
 def index():
-    return """<h1>Documentation at <a href="https://github.com/wesmith340/CS403Project3Server">Github Repo</a></h1>"""
+    return """<h1>Documentation at <a href="https://github.com/wesmith340/CS403Project3Server/blob/main/info.txt">Github Repo</a></h1>"""
 
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
