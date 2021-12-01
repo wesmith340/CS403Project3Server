@@ -76,6 +76,7 @@ def createMeeting(username):
     totalOpenSlots = info['OpenSlots']
     latitude = info['Latitude']
     longitude = info['Longitude']
+    categories = info['Categories']
 
     jsonMsg = jsonify({'Success':False, 'Msg':f'Unable to create meeting'})
 
@@ -83,9 +84,11 @@ def createMeeting(username):
     
     if user != False:
         with engine.begin() as con:
-            con.execute(text(DBInfo.CREATE_MEETING).bindparams(
-                organizer=user['User_TUID'],gameName=gameName,meetingDateTime=meetingDateTime,
-                totalOpenSlots=totalOpenSlots,latitude=latitude,longitude=longitude, user=user['User_TUID']
+            con.execute(
+                text(DBInfo.CREATE_MEETING
+                +[text(DBInfo.UPDATE_CATEGORY).bindparams(meeting=x) for x in categories]).bindparams(
+                    organizer=user['User_TUID'],gameName=gameName,meetingDateTime=meetingDateTime,
+                    totalOpenSlots=totalOpenSlots,latitude=latitude,longitude=longitude, user=user['User_TUID']
                 ))
             jsonMsg = jsonify({'Success':True, 'Msg':f'Successfully added meeting'})
 
@@ -104,7 +107,6 @@ def joinMeeting(username, meetingID):
             jsonMsg = jsonify({'Success':True, 'Msg':f'Successfully joined meeting'})
 
     return jsonMsg
-
 
 
 @app.route('/loginuser/<username>', methods=['POST'])
@@ -130,10 +132,15 @@ def getallmeetings():
     data = pd.read_sql(sql=DBInfo.SELECT_MEETING, con=engine)
     return jsonify(data.to_dict('records'))
 
+@app.route('/getallcategories', methods=['GET'])
+def getallcategories():
+    data = pd.read_sql(sql=DBInfo.SELECT_CATEGORIES, con=engine)
+    return jsonify(data.to_dict('records'))
+
 # A welcome message to test our server
 @app.route('/')
 def index():
-    return "Documentation at "
+    return """<h1>Documentation at <a href="https://github.com/wesmith340/CS403Project3Server">Github Repo</a></h1>"""
 
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support

@@ -36,7 +36,11 @@ Body:
     "DateTime":"",
     "OpenSlots": 0,
     "Latitude": 0,
-    Longitude": 0
+    "Longitude": 0,
+    "Categories": [
+        1,
+        6
+    ]
 }
 Returns:
 {
@@ -98,5 +102,19 @@ Returns:
         "Organizer": 0,
         "TableTopGame_TUID": 0,
         "TotalOpenSlots": 0
+    }
+]
+
+/getallcategories
+Method: GET
+Returns:
+[
+    {
+        "Category_TUID":0,
+        "Category":""
+    },
+    {
+        "Category_TUID":0,
+        "Category":""
     }
 ]

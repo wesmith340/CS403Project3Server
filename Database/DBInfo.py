@@ -33,13 +33,23 @@ CREATE_MEETING = """
     SET @last_id = LAST_INSERT_ID();
     INSERT INTO Users_TableTopGame (User_TUID, TableTopGame_TUID) 
     VALUES(:user,@last_id);
+    DELETE FROM TableTopGame_GameCategories WHERE TableTopGame_TUID=@last_id;
 """
 
 ATTEND_MEETING = """
     INSERT INTO Users_TableTopGame (User_TUID, TableTopGame_TUID) 
-    VALUES(:user,:meeting)
+    VALUES(:user,:meeting);
 """
 
 CHECK_ATTENDEE = """
-    SELECT * FROM Users_TableTopGame WHERE User_TUID=:user AND TableTopGame_TUID=:meeting
+    SELECT * FROM Users_TableTopGame WHERE User_TUID=:user AND TableTopGame_TUID=:meeting;
+"""
+
+UPDATE_CATEGORY = """
+    INSERT INTO TableTopGame_GameCategories (TableTopGame_TUID, GameCategories_TUID)
+    VALUES (:meeting, :category);
+"""
+
+SELECT_CATEGORIES = """
+    SELECT * FROM GameCategories;
 """
