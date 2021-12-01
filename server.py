@@ -137,6 +137,8 @@ def getallcategories():
     data = pd.read_sql(sql=DBInfo.SELECT_CATEGORIES, con=engine)
     return jsonify(data.to_dict('records'))
 
+# Just a small change
+
 # A welcome message to test our server
 @app.route('/')
 def index():
