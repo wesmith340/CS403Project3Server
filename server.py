@@ -67,7 +67,7 @@ def deleteUser(username):
     return jsonMsg
 
 @app.route('/deleteevent/<username>/<eventID>', methods=['DELETE'])
-def deleteUser(username,eventID):
+def deleteEvent(username,eventID):
     print(request.json)
     info = request.json
     hashPassword = b64encode(str.encode(info['Password']))
@@ -81,7 +81,7 @@ def deleteUser(username,eventID):
     return jsonMsg
 
 @app.route('/leaveevent/<username>/<eventID>', methods=['DELETE'])
-def deleteUser(username,eventID):
+def leaveEvent(username,eventID):
     print(request.json)
     info = request.json
     hashPassword = b64encode(str.encode(info['Password']))
@@ -161,7 +161,12 @@ def getallusers():
 
 @app.route('/getallevents', methods=['GET'])
 def getallevents():
-    data = pd.read_sql(sql=DBInfo.SELECT_EVENT, con=engine)
+    data = pd.read_sql(sql=DBInfo.SELECT_ALL_EVENTS, con=engine)
+    return jsonify(data.to_dict('records'))
+
+@app.route('/getevent/<eventID>', methods=['GET'])
+def getevent(eventID):
+    data = pd.read_sql(text(DBInfo.GET_EVENT).bindparams(eventID=eventID), con=engine)
     return jsonify(data.to_dict('records'))
 
 @app.route('/getallcategories', methods=['GET'])

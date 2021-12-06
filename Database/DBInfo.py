@@ -23,8 +23,8 @@ SELECT_ALL_EVENTS = """
     SELECT 
         EventName
         ,GameName
-        ,GameCategory
         ,EventDateTime
+        ,TotalTakenSlots
         ,TotalOpenSlots
         ,Latitude
         ,Longitude
@@ -33,12 +33,22 @@ SELECT_ALL_EVENTS = """
     INNER JOIN (
         SELECT 
             TTG_C.TableTopGame_TUID,
-            GROUP_CONCAT(DISTINCT TTG_C.Category_TUID SEPARATOR ',') AS Categories
+            CONCAT('[',GROUP_CONCAT(DISTINCT TTG_C.Category_TUID SEPARATOR ','),']') AS Categories
         FROM TableTopGame_Category AS TTG_C
         GROUP BY TTG_C.TableTopGame_TUID
     ) AS C
     ON TTG.TableTopGame_TUID = C.TableTopGame_TUID
+    INNER JOIN (
+        SELECT 
+            U_TTG.TableTopGame_TUID,
+            COUNT(U_TTG.User_TUID) AS TotalTakenSlots
+        FROM Users_TableTopGame AS U_TTG
+        GROUP BY U_TTG.TableTopGame_TUID
+    ) AS Tot_Slots
+    ON  TTG.TableTopGame_TUID = Tot_Slots.TableTopGame_TUID
 """
+
+GET_EVENT = SELECT_ALL_EVENTS + """ WHERE TTG.TableTopGame_TUID = :eventID"""
 INSERT_USER = """
     INSERT INTO User (Username, FirstName, LastName, Password) 
     VALUES(:username,:firstName,:lastName,:password)

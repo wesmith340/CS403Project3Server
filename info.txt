@@ -131,6 +131,21 @@ Returns:
     }
 ]
 
+/getevent/<eventID>
+Method: GET
+Returns:
+{
+    "EventName: "",
+    "GameName": "",
+    "Latitude": 0,
+    "Longitude": 0,
+    "EventDateTime": "",
+    "Organizer": "",
+    "TableTopGame_TUID": 0,
+    "TotalOpenSlots": 0
+    "Categories" : [1,2]
+}
+
 /getallcategories
 Method: GET
 Returns:
