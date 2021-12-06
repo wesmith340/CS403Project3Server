@@ -27,7 +27,7 @@ Returns:
     "Msg":" was successfully deleted"
 }
 
-/createmeeting/<username>
+/createevent/<username>
 Method: POST
 Body:
 {
@@ -45,10 +45,10 @@ Body:
 Returns:
 {
     "Success":true, 
-    "Msg":" Successfully added meeting"
+    "Msg":" Successfully added event"
 }
 
-/joinmeeting/<username>/<meetingID>
+/joinevent/<username>/<eventID>
 Method: POST
 Body:
 {
@@ -57,7 +57,7 @@ Body:
 Returns:
 {
     "Success":true, 
-    "Msg":" Successfully joined meeting"
+    "Msg":" Successfully joined event"
 }
 
 /loginuser/<username>
@@ -90,18 +90,20 @@ Returns:
     }
 ]
 
-/getallmeetings
+/getallevents
 Method: GET
 Returns:
 [
     {
+        "EventName: "",
         "GameName": "",
         "Latitude": 0,
         "Longitude": 0,
-        "MeetingDateTime": "",
-        "Organizer": 0,
+        "EventDateTime": "",
+        "Organizer": "",
         "TableTopGame_TUID": 0,
         "TotalOpenSlots": 0
+        "Categories" : [1,2]
     }
 ]
 

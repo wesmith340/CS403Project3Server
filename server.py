@@ -13,15 +13,16 @@ engine = create_engine(DBURL)
 
 # Function for checking if a username and password match in the database
 def verifyUser(username, password):
+    print(username, password)
     user = pd.read_sql(text(DBInfo.VERIFY_USER).bindparams(username=username,password=password), engine)
     if len(user) > 0:
         return user.to_dict('records')[0]
     else:
         return False
 
-# Function returns true if user is not attending meeting
-def notAttending(userTUID, meetingTUID):
-    attendee = pd.read_sql(text(DBInfo.CHECK_ATTENDEE).bindparams(user=userTUID, meeting=meetingTUID), engine)
+# Function returns true if user is not attending event
+def notAttending(userTUID, eventTUID):
+    attendee = pd.read_sql(text(DBInfo.CHECK_ATTENDEE).bindparams(user=userTUID, event=eventTUID), engine)
     if len(attendee) == 0:
         return True
     else:
@@ -66,45 +67,49 @@ def deleteUser(username):
 
     return jsonMsg
 
-@app.route('/createmeeting/<username>', methods=['POST'])
-def createMeeting(username):
+@app.route('/createevent/<username>', methods=['POST'])
+def createEvent(username):
     print(request.json)
     info = request.json
     hashPassword = b64encode(str.encode(info['Password']))
+    eventName = info['EventName']
     gameName = info['GameName']
-    meetingDateTime = info['DateTime']
+    eventDateTime = info['DateTime']
     totalOpenSlots = info['OpenSlots']
     latitude = info['Latitude']
     longitude = info['Longitude']
     categories = info['Categories']
 
-    jsonMsg = jsonify({'Success':False, 'Msg':f'Unable to create meeting'})
+    jsonMsg = jsonify({'Success':False, 'Msg':f'Unable to create event'})
 
     user = verifyUser(username, hashPassword)
     
     if user != False:
+        for x in categories:
+            print(x, " : ",str(text(DBInfo.UPDATE_CATEGORY).bindparams(categoryID=x)))
         with engine.begin() as con:
             con.execute(
-                text(DBInfo.CREATE_MEETING
-                +[text(DBInfo.UPDATE_CATEGORY).bindparams(meeting=x) for x in categories]).bindparams(
-                    organizer=user['User_TUID'],gameName=gameName,meetingDateTime=meetingDateTime,
+                text(DBInfo.CREATE_EVENT).bindparams(
+                    organizer=user['User_TUID'],eventName=eventName,gameName=gameName,eventDateTime=eventDateTime,
                     totalOpenSlots=totalOpenSlots,latitude=latitude,longitude=longitude, user=user['User_TUID']
                 ))
-            jsonMsg = jsonify({'Success':True, 'Msg':f'Successfully added meeting'})
+            for x in categories:
+                con.execute(text(DBInfo.UPDATE_CATEGORY).bindparams(categoryID=x))
+            jsonMsg = jsonify({'Success':True, 'Msg':f'Successfully added event'})
 
     return jsonMsg
 
-@app.route('/joinmeeting/<username>/<meetingID>', methods=['POST'])
-def joinMeeting(username, meetingID):
-    password = request.json['password']
-    jsonMsg = jsonify({'Success':False, 'Msg':f'Unable to join meeting'})
+@app.route('/joinevent/<username>/<eventID>', methods=['POST'])
+def joinEvent(username, eventID):
+    hashPassword = b64encode(str.encode(request.json['Password']))
+    jsonMsg = jsonify({'Success':False, 'Msg':f'Unable to join event'})
 
-    user = verifyUser(username, password)
-
-    if user != False and notAttending(user['User_TUID'], meetingID):
+    user = verifyUser(username, hashPassword)
+    print(user)
+    if user != False and notAttending(user['User_TUID'], eventID):
         with engine.begin() as con:
-            con.execute(text(DBInfo.ATTEND_MEETING).bindparams(user=user['User_TUID'],meeting=meetingID))
-            jsonMsg = jsonify({'Success':True, 'Msg':f'Successfully joined meeting'})
+            con.execute(text(DBInfo.ATTEND_EVENT).bindparams(user=user['User_TUID'],event=eventID))
+            jsonMsg = jsonify({'Success':True, 'Msg':f'Successfully joined event'})
 
     return jsonMsg
 
@@ -127,9 +132,9 @@ def getallusers():
     print(data.to_dict('records'))
     return jsonify(data.to_dict('records'))
 
-@app.route('/getallmeetings', methods=['GET'])
-def getallmeetings():
-    data = pd.read_sql(sql=DBInfo.SELECT_MEETING, con=engine)
+@app.route('/getallevents', methods=['GET'])
+def getallevents():
+    data = pd.read_sql(sql=DBInfo.SELECT_EVENT, con=engine)
     return jsonify(data.to_dict('records'))
 
 @app.route('/getallcategories', methods=['GET'])
@@ -146,5 +151,4 @@ def index():
 
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
-    app.run(threaded=True, port=5000)
-    app.debug(True)
+    app.run(threaded=True, port=5000, debug=True)
