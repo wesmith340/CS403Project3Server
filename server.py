@@ -57,13 +57,40 @@ def addUser():
 def deleteUser(username):
     print(request.json)
     info = request.json
-    hashPassword = info['Password']
+    hashPassword = b64encode(str.encode(info['Password']))
     jsonMsg = jsonify({'Success':False, 'Msg':f'Unable to delete {username}'})
-
     if (verifyUser(username, hashPassword)):
         with engine.begin() as con:
             con.execute(text(DBInfo.DELETE_USER).bindparams(username=username, password=hashPassword))
             jsonMsg = jsonify({'Success':True, 'Msg':f'{username} was successfully deleted'})
+
+    return jsonMsg
+
+@app.route('/deleteevent/<username>/<eventID>', methods=['DELETE'])
+def deleteUser(username,eventID):
+    print(request.json)
+    info = request.json
+    hashPassword = b64encode(str.encode(info['Password']))
+    jsonMsg = jsonify({'Success':False, 'Msg':f'Unable to delete event'})
+    user = verifyUser(username,hashPassword)
+    if user != False:
+        with engine.begin() as con:
+            con.execute(text(DBInfo.DELETE_EVENT).bindparams(eventID=eventID, userID=user['UserTUID']))
+            jsonMsg = jsonify({'Success':True, 'Msg':f'Event was successfully deleted'})
+
+    return jsonMsg
+
+@app.route('/leaveevent/<username>/<eventID>', methods=['DELETE'])
+def deleteUser(username,eventID):
+    print(request.json)
+    info = request.json
+    hashPassword = b64encode(str.encode(info['Password']))
+    jsonMsg = jsonify({'Success':False, 'Msg':f'Unable to leave event'})
+    user = verifyUser(username,hashPassword)
+    if user != False:
+        with engine.begin() as con:
+            con.execute(text(DBInfo.LEAVE_EVENT).bindparams(eventID=eventID, userID=user['UserTUID']))
+            jsonMsg = jsonify({'Success':True, 'Msg':f'Event left successfully'})
 
     return jsonMsg
 

@@ -2,6 +2,7 @@ username = 'w97y1ayp039ur36m'
 password = 'fw9gwxxzkmofzfsa'
 server = 'dcrhg4kh56j13bnu.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306'
 database = 'mfvexsc1zrm922nb'
+
 SELECT_ALL_USERS = """
     SELECT
         User_TUID,
@@ -12,7 +13,6 @@ SELECT_ALL_USERS = """
 """
 CHECK_USER = SELECT_ALL_USERS + """WHERE Username = :username """
 VERIFY_USER = CHECK_USER + """AND Password = :password"""
-
 
 SELECT_EVENT = """
     SELECT 
@@ -45,6 +45,13 @@ INSERT_USER = """
 """
 DELETE_USER = """
     DELETE FROM User WHERE Username = :username AND Password = :password
+"""
+
+DELETE_EVENT = """
+    DELETE FROM TableTopGame WHERE TableTopGame_TUID = :eventID AND Organizer = :userID;
+"""
+LEAVE_EVENT = """
+    DELETE FROM Users_TableTopGame WHERE TableTopGame_TUID = :eventID AND User_TUID = :userID;
 """
 
 CREATE_EVENT = """

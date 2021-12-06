@@ -48,6 +48,18 @@ Returns:
     "Msg":" Successfully added event"
 }
 
+/deleteevent/<username>/<eventID>
+Method: DELETE
+Body:
+{
+    "Password":""
+}
+Returns:
+{
+    "Success":true,
+    "Msg":"Event successfully deleted"
+}
+
 /joinevent/<username>/<eventID>
 Method: POST
 Body:
@@ -58,6 +70,18 @@ Returns:
 {
     "Success":true, 
     "Msg":" Successfully joined event"
+}
+
+/leaveevent/<username>/<eventID>
+Method: DELETE
+Body:
+{
+    "Password":""
+}
+Returns:
+{
+    "Success":true,
+    "Msg":"Event successfully left"
 }
 
 /loginuser/<username>
