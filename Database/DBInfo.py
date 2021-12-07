@@ -49,6 +49,8 @@ SELECT_ALL_EVENTS = """
 """
 
 GET_EVENT = SELECT_ALL_EVENTS + """ WHERE TTG.TableTopGame_TUID = :eventID"""
+GET_USER = SELECT_ALL_USERS + """ WHERE User_TUID = :userID"""
+
 INSERT_USER = """
     INSERT INTO User (Username, FirstName, LastName, Password) 
     VALUES(:username,:firstName,:lastName,:password)

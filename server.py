@@ -168,6 +168,10 @@ def getallevents():
 def getevent(eventID):
     data = pd.read_sql(text(DBInfo.GET_EVENT).bindparams(eventID=eventID), con=engine)
     return jsonify(data.to_dict('records'))
+@app.route('/getevent/<userID>', methods=['GET'])
+def getuser(userID):
+    data = pd.read_sql(text(DBInfo.GET_USER).bindparams(userID=userID), con=engine)
+    return jsonify(data.to_dict('records'))
 
 @app.route('/getallcategories', methods=['GET'])
 def getallcategories():
