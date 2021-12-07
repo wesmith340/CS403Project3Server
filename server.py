@@ -165,7 +165,7 @@ def getallevents():
     return jsonify(data.to_dict('records'))
 
 @app.route('/getmyevents/<username>', methods=['GET'])
-def getallevents(username):
+def getmyevents(username):
     user = pd.read_sql(text(DBInfo.CHECK_USER).bindparams(username=username), con=engine)
     if (len(user) > 0) :
         user = user.to_dict('records')[0]
@@ -182,7 +182,7 @@ def getallevents(username):
             })
 
 @app.route('/getjoinedevents/<username>', methods=['GET'])
-def getuser(username):
+def getjoinedevents(username):
     user = pd.read_sql(text(DBInfo.CHECK_USER).bindparams(username=username), con=engine)
     if (len(user) > 0) :
         user = user.to_dict('records')[0]
