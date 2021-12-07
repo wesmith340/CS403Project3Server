@@ -164,19 +164,61 @@ def getallevents():
     data = pd.read_sql(sql=DBInfo.SELECT_ALL_EVENTS, con=engine)
     return jsonify(data.to_dict('records'))
 
+@app.route('/getmyevents/<username>', methods=['GET'])
+def getallevents(username):
+    user = pd.read_sql(text(DBInfo.CHECK_USER).bindparams(username=username), con=engine)
+    if (len(user) > 0) :
+        user = user.to_dict('records')[0]
+        data = pd.read_sql(text(DBInfo.GET_MY_EVENTS).bindparams(userID=user['User_TUID']), con=engine)
+        jsonMsg = jsonify({
+            'Success':True,
+            'Msg':'Hey got the stuff',
+            'Data':data.to_dict('records')
+            })
+    else:
+        jsonMsg = jsonify({
+            'Success':False, 
+            'Msg':f'{username} does not exist'
+            })
+
+@app.route('/getjoinedevents/<username>', methods=['GET'])
+def getuser(username):
+    user = pd.read_sql(text(DBInfo.CHECK_USER).bindparams(username=username), con=engine)
+    if (len(user) > 0) :
+        user = user.to_dict('records')[0]
+        data = pd.read_sql(text(DBInfo.GET_JOINED_EVENTS).bindparams(userID=user['User_TUID']), con=engine)
+        jsonMsg = jsonify({
+            'Success':True,
+            'Msg':'Hey got the stuff',
+            'Data':data.to_dict('records')
+            })
+    else:
+        jsonMsg = jsonify({
+            'Success':False, 
+            'Msg':f'{username} does not exist'
+            })
+
+    return jsonMsg
+
 @app.route('/getevent/<eventID>', methods=['GET'])
 def getevent(eventID):
     data = pd.read_sql(text(DBInfo.GET_EVENT).bindparams(eventID=eventID), con=engine)
-    return jsonify(data.to_dict('records'))
-@app.route('/getevent/<userID>', methods=['GET'])
-def getuser(userID):
-    data = pd.read_sql(text(DBInfo.GET_USER).bindparams(userID=userID), con=engine)
-    return jsonify(data.to_dict('records'))
+    return jsonify({
+            'Success':True,
+            'Msg':'Hey got the stuff',
+            'Data':data.to_dict('records')
+            })
+
+
 
 @app.route('/getallcategories', methods=['GET'])
 def getallcategories():
     data = pd.read_sql(sql=DBInfo.SELECT_CATEGORIES, con=engine)
-    return jsonify(data.to_dict('records'))
+    return jsonify({
+            'Success':True,
+            'Msg':'Hey got the stuff',
+            'Data':data.to_dict('records')
+            })
 
 # Just a small change
 

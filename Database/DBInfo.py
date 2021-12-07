@@ -45,7 +45,15 @@ SELECT_ALL_EVENTS = """
         FROM Users_TableTopGame AS U_TTG
         GROUP BY U_TTG.TableTopGame_TUID
     ) AS Tot_Slots
-    ON  TTG.TableTopGame_TUID = Tot_Slots.TableTopGame_TUID
+    ON TTG.TableTopGame_TUID = Tot_Slots.TableTopGame_TUID
+
+"""
+
+GET_MY_EVENTS = SELECT_ALL_EVENTS +""" WHERE TTG.OrganizerID =:userID"""
+GET_JOINED_EVENTS = """
+    INNER JOIN Users_TableTopGame as U_TTG
+    ON TTG.TableTopGame_TUID = U_TTG.TableTopGame_TUID
+    Where U_TTG.User_TUID = :userID
 """
 
 GET_EVENT = SELECT_ALL_EVENTS + """ WHERE TTG.TableTopGame_TUID = :eventID"""
