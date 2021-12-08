@@ -56,6 +56,7 @@ def addUser():
 @app.route('/deleteuser/<username>', methods=['DELETE'])
 def deleteUser(username):
     print(request.json)
+    username = username.lower()
     info = request.json
     hashPassword = b64encode(str.encode(info['Password']))
     jsonMsg = jsonify({'Success':False, 'Msg':f'Unable to delete {username}'})
@@ -69,6 +70,7 @@ def deleteUser(username):
 @app.route('/deleteevent/<username>/<eventID>', methods=['DELETE'])
 def deleteEvent(username,eventID):
     print(request.json)
+    username = username.lower()
     info = request.json
     hashPassword = b64encode(str.encode(info['Password']))
     jsonMsg = jsonify({'Success':False, 'Msg':f'Unable to delete event'})
@@ -83,6 +85,7 @@ def deleteEvent(username,eventID):
 @app.route('/leaveevent/<username>/<eventID>', methods=['DELETE'])
 def leaveEvent(username,eventID):
     print(request.json)
+    username = username.lower()
     info = request.json
     hashPassword = b64encode(str.encode(info['Password']))
     jsonMsg = jsonify({'Success':False, 'Msg':f'Unable to leave event'})
@@ -97,6 +100,7 @@ def leaveEvent(username,eventID):
 @app.route('/createevent/<username>', methods=['POST'])
 def createEvent(username):
     print(request.json)
+    username = username.lower()
     info = request.json
     hashPassword = b64encode(str.encode(info['Password']))
     eventName = info['EventName']
@@ -128,6 +132,7 @@ def createEvent(username):
 
 @app.route('/joinevent/<username>/<eventID>', methods=['POST'])
 def joinEvent(username, eventID):
+    username = username.lower()
     hashPassword = b64encode(str.encode(request.json['Password']))
     jsonMsg = jsonify({'Success':False, 'Msg':f'Unable to join event'})
 
@@ -143,29 +148,40 @@ def joinEvent(username, eventID):
 
 @app.route('/loginuser/<username>', methods=['POST'])
 def loginUser(username):
+    username = username.lower()
     info = request.json
     hashPassword = b64encode(str.encode(info['Password']))
     row = None
     jsonMsg = jsonify({'Success':False, 'Msg':'Username and Password do not match'})
-    with engine.begin() as con:
-        row = con.execute(text(DBInfo.VERIFY_USER).bindparams(username=username,password=hashPassword)).fetchall()
-    if len(row) > 0:
-        jsonMsg = jsonify({'Success':True,'Msg':'Username and Password are in the database'})
+    user = verifyUser(username,hashPassword)
+
+    if user != False:
+        jsonMsg = jsonify({'Success':True, 'Data':user,'Msg':'Username and Password are in the database'})
+
     return jsonMsg
 
 @app.route('/getallusers', methods=['GET'])
 def getallusers():
     data = pd.read_sql(sql=DBInfo.SELECT_ALL_USERS, con=engine)
     print(data.to_dict('records'))
-    return jsonify(data.to_dict('records'))
+    return jsonify({
+            'Success':True,
+            'Msg':'Hey got the stuff',
+            'Data':data.to_dict('records')
+            })
 
 @app.route('/getallevents', methods=['GET'])
 def getallevents():
     data = pd.read_sql(sql=DBInfo.SELECT_ALL_EVENTS, con=engine)
-    return jsonify(data.to_dict('records'))
+    return jsonify({
+            'Success':True,
+            'Msg':'Hey got the stuff',
+            'Data':data.to_dict('records')
+            })
 
 @app.route('/getmyevents/<username>', methods=['GET'])
 def getmyevents(username):
+    username = username.lower()
     user = pd.read_sql(text(DBInfo.CHECK_USER).bindparams(username=username), con=engine)
     if (len(user) > 0) :
         user = user.to_dict('records')[0]
@@ -183,6 +199,7 @@ def getmyevents(username):
 
 @app.route('/getjoinedevents/<username>', methods=['GET'])
 def getjoinedevents(username):
+    username = username.lower()
     user = pd.read_sql(text(DBInfo.CHECK_USER).bindparams(username=username), con=engine)
     if (len(user) > 0) :
         user = user.to_dict('records')[0]

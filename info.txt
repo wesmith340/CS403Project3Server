@@ -94,6 +94,12 @@ Body:
 Returns:
 {
     "Success":true, 
+    "Data": {
+        User_TUID:0,
+        Username:"",
+        FirstName:"",
+        LastName:""
+    },
     "Msg":"Username and Password are in the database"
 }
 
@@ -118,19 +124,65 @@ Returns:
 /getallevents
 Method: GET
 Returns:
-[
-    {
-        "EventName: "",
-        "GameName": "",
-        "Latitude": 0,
-        "Longitude": 0,
-        "EventDateTime": "",
-        "Organizer": "",
-        "TableTopGame_TUID": 0,
-        "TotalOpenSlots": 0
-        "Categories" : [1,2]
-    }
-]
+{
+    "Success":True,
+    "Msg":"Hey got the stuff",
+    "Data":[
+        {
+            "EventName: "",
+            "GameName": "",
+            "Latitude": 0,
+            "Longitude": 0,
+            "EventDateTime": "",
+            "Organizer": "",
+            "TableTopGame_TUID": 0,
+            "TotalOpenSlots": 0
+            "Categories" : [1,2]
+        }
+    ],
+}
+
+/getmyevents/<username>
+Method: GET
+Returns:
+{
+    "Success":True,
+    "Msg":"Hey got the stuff",
+    "Data":[
+        {
+            "EventName: "",
+            "GameName": "",
+            "Latitude": 0,
+            "Longitude": 0,
+            "EventDateTime": "",
+            "Organizer": "",
+            "TableTopGame_TUID": 0,
+            "TotalOpenSlots": 0
+            "Categories" : [1,2]
+        }
+    ],
+}
+
+/getjoinedevents/<username>
+Method: GET
+Returns:
+{
+    "Success":True,
+    "Msg":"Hey got the stuff",
+    "Data":[
+        {
+            "EventName: "",
+            "GameName": "",
+            "Latitude": 0,
+            "Longitude": 0,
+            "EventDateTime": "",
+            "Organizer": "",
+            "TableTopGame_TUID": 0,
+            "TotalOpenSlots": 0
+            "Categories" : [1,2]
+        }
+    ],
+}
 
 /getevent/<eventID>
 Method: GET
@@ -150,13 +202,17 @@ Returns:
 /getallcategories
 Method: GET
 Returns:
-[
-    {
-        "Category_TUID":0,
-        "Category":""
-    },
-    {
-        "Category_TUID":0,
-        "Category":""
-    }
-]
+{
+    "Success":True,
+    "Msg":"Hey got the stuff",
+    "Data":[
+        {
+            "Category_TUID":0,
+            "Category":""
+        },
+        {
+            "Category_TUID":0,
+            "Category":""
+        }
+    ]
+}

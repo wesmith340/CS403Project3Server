@@ -80,6 +80,7 @@ CREATE_EVENT = """
     SET @last_id = LAST_INSERT_ID();
     INSERT INTO Users_TableTopGame (User_TUID, TableTopGame_TUID) 
     VALUES(:user,@last_id);
+    Select @last_id as TableID;
 """
 UPDATE_CATEGORY = """
     INSERT INTO TableTopGame_Category (TableTopGame_TUID, Category_TUID) 
