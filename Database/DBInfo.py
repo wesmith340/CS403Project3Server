@@ -21,8 +21,10 @@ SELECT_EVENT = """
 """
 SELECT_ALL_EVENTS = """
     SELECT 
-        EventName
+        TTG.TableTopGame_TUID
+		  ,EventName
         ,GameName
+        ,Username
         ,EventDateTime
         ,TotalTakenSlots
         ,TotalOpenSlots
@@ -46,6 +48,8 @@ SELECT_ALL_EVENTS = """
         GROUP BY U_TTG.TableTopGame_TUID
     ) AS Tot_Slots
     ON TTG.TableTopGame_TUID = Tot_Slots.TableTopGame_TUID
+    INNER JOIN User
+    ON TTG.Organizer = User.User_TUID
 
 """
 
