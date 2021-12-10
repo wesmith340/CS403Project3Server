@@ -196,6 +196,7 @@ def getmyevents(username):
             'Success':False, 
             'Msg':f'{username} does not exist'
             })
+    return jsonMsg
 
 @app.route('/getjoinedevents/<username>', methods=['GET'])
 def getjoinedevents(username):
