@@ -53,7 +53,7 @@ def addUser():
             })
     return jsonMsg
 
-@app.route('/deleteuser/<username>', methods=['DELETE'])
+@app.route('/deleteuser/<username>', methods=['POST'])
 def deleteUser(username):
     print(request.json)
     username = username.lower()
@@ -67,7 +67,7 @@ def deleteUser(username):
 
     return jsonMsg
 
-@app.route('/deleteevent/<username>/<eventID>', methods=['DELETE'])
+@app.route('/deleteevent/<username>/<eventID>', methods=['POST'])
 def deleteEvent(username,eventID):
     print(request.json)
     username = username.lower()
@@ -82,7 +82,7 @@ def deleteEvent(username,eventID):
 
     return jsonMsg
 
-@app.route('/leaveevent/<username>/<eventID>', methods=['DELETE'])
+@app.route('/leaveevent/<username>/<eventID>', methods=['POST'])
 def leaveEvent(username,eventID):
     print(request.json)
     username = username.lower()
