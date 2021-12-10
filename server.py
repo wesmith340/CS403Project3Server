@@ -40,7 +40,7 @@ def addUser():
     row = None
     jsonMsg = jsonify({'Success':False,'Msg':'Unknown error'})
     with engine.begin() as con:
-        row = con.execute(text(DBInfo.CHECK_USER).bindparams(username=username)).fetchall()
+        row = pd.read_sql(text(DBInfo.CHECK_USER).bindparams(username=username), con=engine)
         
     if (row == None or len(row) == 0):
         with engine.begin() as con:
