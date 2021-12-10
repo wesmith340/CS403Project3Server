@@ -42,7 +42,7 @@ def addUser():
     with engine.begin() as con:
         row = pd.read_sql(text(DBInfo.CHECK_USER).bindparams(username=username), con=engine)
         
-    if (row == None or len(row) == 0):
+    if (len(row) == 0):
         with engine.begin() as con:
             con.execute(text(DBInfo.INSERT_USER).bindparams(username=username,firstName=fname,lastName=lname,password=hashPassword))
             jsonMsg = jsonify({'Success':True, 'Msg':f'{username} has been added to the database'})
