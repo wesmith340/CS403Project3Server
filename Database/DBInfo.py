@@ -22,9 +22,9 @@ SELECT_EVENT = """
 SELECT_ALL_EVENTS = """
     SELECT 
         TTG.TableTopGame_TUID
-		  ,EventName
+		,EventName
         ,GameName
-        ,Username
+        ,Username as Organizer
         ,EventDateTime
         ,TotalTakenSlots
         ,TotalOpenSlots
