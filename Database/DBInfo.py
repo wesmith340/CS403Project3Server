@@ -53,7 +53,7 @@ SELECT_ALL_EVENTS = """
 """
 
 GET_MY_EVENTS = SELECT_ALL_EVENTS +""" WHERE TTG.Organizer =:userID"""
-GET_JOINED_EVENTS = """
+GET_JOINED_EVENTS = SELECT_ALL_EVENTS+ """
      INNER JOIN Users_TableTopGame as U_TTG
     ON TTG.TableTopGame_TUID = U_TTG.TableTopGame_TUID
     Where U_TTG.User_TUID = :userID
