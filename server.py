@@ -77,7 +77,7 @@ def deleteEvent(username,eventID):
     user = verifyUser(username,hashPassword)
     if user != False:
         with engine.begin() as con:
-            con.execute(text(DBInfo.DELETE_EVENT).bindparams(eventID=eventID, userID=user['UserTUID']))
+            con.execute(text(DBInfo.DELETE_EVENT).bindparams(eventID=eventID, userID=user['User_TUID']))
             jsonMsg = jsonify({'Success':True, 'Msg':f'Event was successfully deleted'})
 
     return jsonMsg
@@ -92,7 +92,7 @@ def leaveEvent(username,eventID):
     user = verifyUser(username,hashPassword)
     if user != False:
         with engine.begin() as con:
-            con.execute(text(DBInfo.LEAVE_EVENT).bindparams(eventID=eventID, userID=user['UserTUID']))
+            con.execute(text(DBInfo.LEAVE_EVENT).bindparams(eventID=eventID, userID=user['User_TUID']))
             jsonMsg = jsonify({'Success':True, 'Msg':f'Event left successfully'})
 
     return jsonMsg
